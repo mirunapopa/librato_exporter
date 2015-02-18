@@ -25,7 +25,7 @@ def main():
 			if item['measure_time'] not in dictionary.keys():
 				dictionary[item['measure_time']] = {}
 			dictionary[item['measure_time']][name] = item['value']
-	for item in dictionary.keys():
+	for item in sorted(dictionary.keys()):
 		row = []
 		row.append(item)
 		row.append(datetime.datetime.fromtimestamp(int(item)).strftime("%Y-%m-%d %H:%M"))
