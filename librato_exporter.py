@@ -4,7 +4,7 @@ from pprint import pprint
 import csv
 import os
 import sys
-
+import datetime
 
 def main():
 	if os.environ.get('LIBRATO_USER') == None or os.environ.get('LIBRATO_TOKEN') == None or os.environ.get('LIBRATO_METRICS') == None:
@@ -17,6 +17,7 @@ def main():
 	dictionary = {}
 	fp = open('api_calls.csv','wb')
 	a = csv.writer(fp, delimiter = ",")
+	a.writerow(["UnixTimeStamp", "TimeStamp"] + librato_metrics)
 	for name in librato_metrics:
 		link = 'https://' + librato_email + ':' + librato_token + '@metrics.librato.com/metrics-api/v1/metrics/' + name + '?resolution=60&start_time=1424268251'
 		data = parsingData(link)
@@ -24,9 +25,10 @@ def main():
 			if item['measure_time'] not in dictionary.keys():
 				dictionary[item['measure_time']] = {}
 			dictionary[item['measure_time']][name] = item['value']
-	for item in dictionary.keys():
+	for item in sorted(dictionary.keys()):
 		row = []
 		row.append(item)
+		row.append(datetime.datetime.fromtimestamp(int(item)).strftime("%Y-%m-%d %H:%M"))
 		for name in librato_metrics:
 			row.append(dictionary[item][name])
 		a.writerow(row)
